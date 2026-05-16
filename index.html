@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pergamum UFSC — Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:      #0D2D5E;
+  --navy-mid:  #1A4080;
+  --navy-light:#2860C0;
+  --accent:    #E8251A;
+  --accent-bg: #FFF1F0;
+  --gold:      #F5A623;
+  --gold-bg:   #FFF8EC;
+  --green:     #1A7A4A;
+  --green-bg:  #EBF7F1;
+  --bg:        #F0F2F6;
+  --surface:   #FFFFFF;
+  --border:    #DDE2EC;
+  --text:      #111827;
+  --text2:     #4B5568;
+  --text3:     #9CA3AF;
+  --radius:    12px;
+  --radius-sm: 8px;
+  --header-h:  56px;
+}
+
+html, body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── PHONE FRAME (desktop preview) ─── */
+.phone-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  background: #1A1A2E;
+  padding: 24px 16px;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.phone-frame {
+  width: 390px;
+  min-height: 844px;
+  background: var(--bg);
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow: 0 0 0 8px #2A2A3E, 0 32px 80px rgba(0,0,0,0.5);
+  position: relative;
+  flex-shrink: 0;
+}
+.phone-notch {
+  height: 12px;
+  background: #0D2D5E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.phone-screen {
+  height: calc(100% - 12px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+.phone-screen::-webkit-scrollbar { display: none; }
+
+/* ─── SCREEN MANAGER ─── */
+.screen { display: none; min-height: 100%; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ─── HEADER ─── */
+.header {
+  height: var(--header-h);
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hamburger {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+.hamburger span {
+  display: block;
+  width: 16px; height: 1.5px;
+  background: white;
+  border-radius: 2px;
+}
+.header-title {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.notif-btn {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.12);
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+.notif-btn svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; }
+.notif-dot {
+  width: 16px; height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: absolute;
+  top: -2px; right: -2px;
+  border: 2px solid var(--navy);
+  font-size: 8px; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+.sair-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--accent);
+  border: none; border-radius: 6px;
+  color: white; font-size: 0.75rem; font-weight: 600;
+  padding: 6px 10px; cursor: pointer;
+  font-family: inherit;
+}
+.sair-btn svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2.5; }
+
+/* ─── SUBHEADER SEARCH ─── */
+.subheader {
+  background: var(--navy);
+  padding: 0 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.user-greet { color: rgba(255,255,255,0.7); font-size: 0.8rem; font-weight: 500; }
+.catalog-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  color: white; font-size: 0.75rem; font-weight: 500;
+  padding: 6px 12px; cursor: pointer;
+  font-family: inherit;
+}
+.catalog-btn svg { width: 13px; height: 13px; stroke: white; fill: none; stroke-width: 2; }
+
+/* ─── CONTENT AREA ─── */
+.content { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+/* ─── SECTION LABEL ─── */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─── QUICK ACTIONS (home) ─── */
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.quick-card {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  transition: opacity 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.quick-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.15s;
+}
+.quick-card:active::after { background: rgba(255,255,255,0.08); }
+.quick-card .icon-wrap {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.quick-card svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 1.8; }
+.quick-card .label { color: rgba(255,255,255,0.9); font-size: 0.8rem; font-weight: 600; }
+.quick-card .count {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.7rem;
+}
+.quick-card.accent { background: linear-gradient(135deg, #c0392b, #E8251A); }
+
+/* ─── SERVICE LIST ─── */
+.service-list { display: flex; flex-direction: column; gap: 2px; }
+.service-item {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 13px 14px;
+  gap: 12px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s;
+}
+.service-item:active { background: #F5F7FA; }
+.service-item .svc-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.svc-icon svg { width: 17px; height: 17px; fill: none; stroke-width: 2; }
+.svc-icon.blue { background: #EEF4FF; }
+.svc-icon.blue svg { stroke: var(--navy-light); }
+.svc-icon.green { background: var(--green-bg); }
+.svc-icon.green svg { stroke: var(--green); }
+.svc-icon.gold { background: var(--gold-bg); }
+.svc-icon.gold svg { stroke: #B8820F; }
+.svc-icon.red { background: var(--accent-bg); }
+.svc-icon.red svg { stroke: var(--accent); }
+.svc-icon.gray { background: #F3F4F6; }
+.svc-icon.gray svg { stroke: var(--text2); }
+.service-item .svc-text { flex: 1; }
+.service-item .svc-name { font-size: 0.875rem; font-weight: 600; color: var(--text); }
+.service-item .svc-sub { font-size: 0.72rem; color: var(--text2); margin-top: 1px; }
+.chevron { width: 16px; height: 16px; stroke: var(--text3); fill: none; stroke-width: 2; flex-shrink: 0; }
+
+/* ─── BACK HEADER ─── */
+.back-header {
+  background: var(--navy);
+  padding: 0 16px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.back-btn-nav {
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,0.15);
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.back-btn-nav svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2.5; }
+.breadcrumb {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.8);
+  display: flex; align-items: center; gap: 5px;
+}
+.breadcrumb .sep { opacity: 0.4; font-size: 0.65rem; }
+.breadcrumb .current { color: white; font-weight: 600; }
+
+/* ─── DRAWER MENU ─── */
+.drawer-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,15,40,0.6);
+  z-index: 200;
+  display: none;
+}
+.drawer-overlay.open { display: block; }
+.drawer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 85%;
+  height: 100%;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+.drawer-overlay.open .drawer { transform: translateX(0); }
+
+.drawer-header {
+  padding: 48px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.drawer-logo {
+  font-size: 1.1rem; font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.drawer-sub { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+
+.drawer-user {
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.drawer-avatar {
+  width: 36px; height: 36px;
+  background: var(--navy-light);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.75rem; font-weight: 700;
+}
+.drawer-username { color: white; font-size: 0.875rem; font-weight: 600; }
+.drawer-role { color: rgba(255,255,255,0.5); font-size: 0.72rem; }
+
+.drawer-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.drawer-item {
+  display: flex; align-items: center;
+  padding: 13px 20px;
+  gap: 12px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.12s;
+  border-radius: 0;
+}
+.drawer-item:hover { background: rgba(255,255,255,0.06); }
+.drawer-item.active { background: rgba(255,255,255,0.1); }
+.drawer-item svg { width: 18px; height: 18px; stroke: rgba(255,255,255,0.6); fill: none; stroke-width: 1.8; flex-shrink: 0; }
+.drawer-item .d-label { color: rgba(255,255,255,0.85); font-size: 0.875rem; font-weight: 500; flex: 1; }
+.drawer-item .d-chevron { width: 14px; height: 14px; stroke: rgba(255,255,255,0.3); fill: none; stroke-width: 2; }
+
+.drawer-footer {
+  padding: 16px 20px 32px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.drawer-sair {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(232,37,26,0.15);
+  border: 1px solid rgba(232,37,26,0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #FF8C88; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; width: 100%; font-family: inherit;
+}
+.drawer-sair svg { width: 16px; height: 16px; stroke: #FF8C88; fill: none; stroke-width: 2; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+  gap: 12px;
+  text-align: center;
+}
+.empty-icon {
+  width: 64px; height: 64px;
+  background: var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+}
+.empty-icon svg { width: 28px; height: 28px; stroke: var(--text3); fill: none; stroke-width: 1.5; }
+.empty-title { font-size: 0.975rem; font-weight: 600; color: var(--text); }
+.empty-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.5; max-width: 220px; }
+
+/* ─── BANNER ─── */
+.banner {
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.banner svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+.banner.info { background: #EEF4FF; border: 1px solid #BFCFEE; }
+.banner.info svg { stroke: var(--navy-light); fill: none; stroke-width: 2; }
+.banner.info .banner-text { color: var(--navy-mid); }
+.banner.warn { background: var(--gold-bg); border: 1px solid #F0C96A; }
+.banner.warn svg { stroke: #B8820F; fill: none; stroke-width: 2; }
+.banner.warn .banner-text { color: #7A5400; }
+.banner.success { background: var(--green-bg); border: 1px solid #86CEAA; }
+.banner.success svg { stroke: var(--green); fill: none; stroke-width: 2; }
+.banner.success .banner-text { color: #0F4F2E; }
+
+/* ─── BOOK CARD (detalhe) ─── */
+.book-detail-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.book-detail-header {
+  background: var(--navy);
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.book-thumb {
+  width: 56px;
+  aspect-ratio: 2/3;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--navy-mid);
+  display: flex; align-items: center; justify-content: center;
+}
+.book-thumb svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.4); fill: none; stroke-width: 1.5; }
+.book-meta { flex: 1; }
+.book-meta h2 { font-size: 0.9rem; font-weight: 700; color: white; line-height: 1.35; margin-bottom: 4px; }
+.book-meta .bm-author { font-size: 0.75rem; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+.book-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.65rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.chip-available { background: #86CEAA; color: #0A3D22; }
+.chip-queue { background: #FAC775; color: #412402; }
+.chip-unavailable { background: #D1D5DB; color: #374151; }
+
+.book-detail-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.detail-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.detail-row .dr-label { font-size: 0.72rem; color: var(--text3); font-weight: 500; flex-shrink: 0; }
+.detail-row .dr-value { font-size: 0.8rem; color: var(--text); font-weight: 500; text-align: right; }
+
+/* ─── FORM ─── */
+.form-section { display: flex; flex-direction: column; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 0.78rem; font-weight: 600; color: var(--text2); }
+.form-select, .form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--surface);
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition: border-color 0.15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.form-select:focus, .form-input:focus { border-color: var(--navy-light); }
+.form-select.disabled, .form-input.disabled {
+  background-color: #F9FAFB;
+  color: var(--text3);
+  cursor: not-allowed;
+}
+.form-hint { font-size: 0.72rem; color: var(--text3); }
+
+/* ─── BUTTONS ─── */
+.btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  transition: all 0.15s;
+}
+.btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+.btn-primary { background: var(--navy); color: white; }
+.btn-primary:active { background: var(--navy-mid); transform: scale(0.99); }
+.btn-danger { background: var(--accent-bg); color: var(--accent); border: 1.5px solid #FBBBB8; }
+.btn-ghost { background: none; color: var(--text2); border: 1.5px solid var(--border); }
+.btn:disabled {
+  background: #E9EBF0 !important;
+  color: #B0B7C3 !important;
+  border-color: transparent !important;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-reason {
+  font-size: 0.72rem;
+  color: var(--text3);
+  text-align: center;
+  margin-top: -6px;
+}
+
+/* ─── RESERVATION LIST ─── */
+.res-list { display: flex; flex-direction: column; gap: 10px; }
+.res-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.res-card-header {
+  padding: 12px 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+}
+.res-book-thumb {
+  width: 40px; aspect-ratio: 2/3;
+  border-radius: 5px;
+  background: var(--navy);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.res-book-thumb svg { width: 15px; height: 15px; stroke: rgba(255,255,255,0.5); fill: none; stroke-width: 1.5; }
+.res-book-info { flex: 1; }
+.res-book-title { font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 2px; }
+.res-book-author { font-size: 0.72rem; color: var(--text2); }
+.res-status-tag {
+  font-size: 0.65rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.tag-pickup { background: var(--gold-bg); color: #7A5400; border: 1px solid #F0C96A; }
+.tag-borrowed { background: var(--green-bg); color: #0F4F2E; border: 1px solid #86CEAA; }
+
+.res-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.progress-row { display: flex; align-items: center; gap: 8px; }
+.progress-bg {
+  flex: 1; height: 5px;
+  background: var(--border);
+  border-radius: 3px; overflow: hidden;
+}
+.progress-fill { height: 100%; border-radius: 3px; }
+.fill-green { background: var(--green); }
+.fill-amber { background: var(--gold); }
+.fill-red { background: var(--accent); }
+.progress-label { font-size: 0.7rem; color: var(--text2); white-space: nowrap; font-weight: 500; }
+
+.cancel-res-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+.cancel-res-btn:active { background: var(--accent-bg); }
+.cancel-res-btn svg { width: 13px; height: 13px; stroke: var(--accent); fill: none; stroke-width: 2.5; }
+
+/* ─── HISTORY LINK ─── */
+.history-link {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--navy-light);
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+}
+.history-link svg { width: 15px; height: 15px; stroke: var(--navy-light); fill: none; stroke-width: 2; }
+
+/* ─── TOAST ─── */
+.toast-wrap {
+  position: absolute;
+  bottom: 20px; left: 16px; right: 16px;
+  z-index: 500;
+  pointer-events: none;
+}
+.toast {
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.82rem; line-height: 1.5;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  animation: toastIn 0.22s ease;
+  pointer-events: auto;
+}
+@keyframes toastIn {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.toast.success { background: #0F4F2E; color: #86CEAA; }
+.toast.warn { background: #412402; color: #FAC775; }
+.toast.error { background: #5C1010; color: #FFA8A5; }
+.toast svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 1px; }
+.toast .toast-body { flex: 1; }
+.toast strong { display: block; font-weight: 700; margin-bottom: 1px; }
+
+/* ─── DEV LEGEND ─── */
+.legend-panel {
+  width: 240px;
+  color: rgba(255,255,255,0.7);
+  flex-shrink: 0;
+}
+.legend-panel h3 {
+  font-size: 0.875rem; font-weight: 700; color: white;
+  margin-bottom: 12px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  font-size: 0.78rem;
+}
+.legend-item:hover { background: rgba(255,255,255,0.08); }
+.legend-item.current { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: white; }
+.legend-num {
+  width: 22px; height: 22px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700;
+  flex-shrink: 0;
+}
+.legend-item.current .legend-num { background: var(--navy-light); }
+.legend-fix {
+  font-size: 0.68rem; color: rgba(255,255,255,0.4);
+  margin-top: 3px; margin-left: 2px;
+}
+
+/* ─── BOOK SEARCH CARD ─── */
+.book-search-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.book-search-card:active { background: #F5F7FA; }
+.bsc-thumb {
+  width: 44px;
+  aspect-ratio: 2/3;
+  border-radius: 6px;
+  background: var(--navy);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.bsc-thumb svg { width: 18px; height: 18px; stroke: rgba(255,255,255,0.45); fill: none; stroke-width: 1.5; }
+.bsc-info { flex: 1; }
+.bsc-title { font-size: 0.875rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+.bsc-author { font-size: 0.72rem; color: var(--text2); margin-top: 2px; }
+
+/* ─── DIVIDER ─── */
+.divider { height: 1px; background: var(--border); margin: 0 -16px; }
+
+/* ─── SUPPORT ─── */
+.support-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.78rem; font-weight: 600; color: var(--text2);
+  cursor: pointer; font-family: inherit;
+  width: fit-content; margin: 0 auto;
+}
+.support-btn svg { width: 14px; height: 14px; stroke: var(--text2); fill: none; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+
+  <!-- LEGEND (desktop) -->
+  <div class="legend-panel">
+    <h3>Telas — Pergamum Redesign</h3>
+    <div class="legend-item current" id="leg-home" onclick="goScreen('home')">
+      <span class="legend-num">A</span>
+      <div>
+        <div>Início</div>
+        <div class="legend-fix">Destaques e serviços</div>
+      </div>
+    </div>
+    <div class="legend-item" id="leg-emprestimo" onclick="goScreen('emprestimo')">
+      <span class="legend-num">B</span>
+      <div>
+        <div>Empréstimo (submenu)</div>
+        <div class="legend-fix">Hierarquia corrigida</div>
+      </div>
+    </div>
+    <div class="legend-item" id="leg-reservas" onclick="goScreen('reservas')">
+      <span class="legend-num">C</span>
+      <div>
+        <div>Minhas reservas</div>
+        <div class="legend-fix">Estado vazio + lista</div>
+      </div>
+    </div>
+    <div class="legend-item" id="leg-reservar" onclick="goScreen('reservar')">
+      <span class="legend-num">D</span>
+      <div>
+        <div>Reservar livro</div>
+        <div class="legend-fix">Form com feedback claro</div>
+      </div>
+    </div>
+    <div class="legend-item" id="leg-confirmada" onclick="goScreen('confirmada')">
+      <span class="legend-num">E</span>
+      <div>
+        <div>Reserva confirmada</div>
+        <div class="legend-fix">Estado de sucesso</div>
+      </div>
+    </div>
+    <div style="margin-top:24px; font-size:0.7rem; color:rgba(255,255,255,0.3); line-height:1.6;">
+      Clique nas telas ou<br>navegue pelos botões do app
+    </div>
+  </div>
+
+  <!-- PHONE FRAME -->
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" id="phone-screen">
+
+      <!-- ═══ SCREEN A: HOME ═══ -->
+      <div class="screen active" id="screen-home">
+        <div class="header">
+          <div class="header-left">
+            <button class="hamburger" onclick="openDrawer()">
+              <span></span><span></span><span></span>
+            </button>
+            <span class="header-title">Início</span>
+          </div>
+          <div class="header-right">
+            <button class="notif-btn">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="notif-dot">0</span>
+            </button>
+            <button class="sair-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+        <div class="subheader">
+          <span class="user-greet">Olá, Artur 👋</span>
+          <button class="catalog-btn" onclick="showToast('info','Catálogo online — em breve neste protótipo.')">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Catálogo online
+          </button>
+        </div>
+
+        <div class="content">
+          <div class="section-label">Destaques</div>
+
+          <div class="quick-grid">
+            <button class="quick-card accent" onclick="goScreen('reservas')">
+              <div class="icon-wrap">
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="label">Títulos reservados</div>
+              <div class="count">2 reservas ativas</div>
+            </button>
+            <button class="quick-card" onclick="showToast('info','Você não tem empréstimos pendentes.')">
+              <div class="icon-wrap">
+                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <div class="label">Títulos pendentes</div>
+              <div class="count">0 pendências</div>
+            </button>
+          </div>
+
+          <div class="section-label">Serviços</div>
+
+          <div class="service-list">
+            <button class="service-item" onclick="goScreen('emprestimo')">
+              <div class="svc-icon blue">
+                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Empréstimo</div>
+                <div class="svc-sub">Renovação, reserva, débito</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="showToast('info','Perfil de interesse — em construção.')">
+              <div class="svc-icon green">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Perfil de interesse</div>
+                <div class="svc-sub">Áreas temáticas preferidas</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="showToast('info','Aquisição — em construção.')">
+              <div class="svc-icon gold">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Aquisição</div>
+                <div class="svc-sub">Sugerir novo título</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="showToast('info','Dados pessoais — em construção.')">
+              <div class="svc-icon gray">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Dados pessoais</div>
+                <div class="svc-sub">Editar cadastro</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+
+          <button class="support-btn">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Suporte
+          </button>
+        </div>
+      </div><!-- /screen-home -->
+
+      <!-- ═══ SCREEN B: EMPRÉSTIMO ═══ -->
+      <div class="screen" id="screen-emprestimo">
+        <div class="header">
+          <div class="header-left">
+            <button class="hamburger" onclick="openDrawer()">
+              <span></span><span></span><span></span>
+            </button>
+            <span class="header-title">Empréstimo</span>
+          </div>
+          <div class="header-right">
+            <button class="notif-btn">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="notif-dot">0</span>
+            </button>
+            <button class="sair-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+        <div class="back-header">
+          <button class="back-btn-nav" onclick="goScreen('home')">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="breadcrumb">
+            <span>Início</span>
+            <span class="sep">›</span>
+            <span class="current">Empréstimo</span>
+          </div>
+        </div>
+        <div class="content">
+          <div class="service-list">
+            <button class="service-item" onclick="showToast('info','Renovação — em construção.')">
+              <div class="svc-icon blue">
+                <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Renovação</div>
+                <div class="svc-sub">Renovar prazo de devolução</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="goScreen('reservas')">
+              <div class="svc-icon green">
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Reserva</div>
+                <div class="svc-sub">Ver e gerenciar reservas ativas</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="showToast('info','Débito — em construção.')">
+              <div class="svc-icon red">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Débito</div>
+                <div class="svc-sub">Pendências e multas</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="showToast('info','Material pendente — em construção.')">
+              <div class="svc-icon gold">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Material pendente</div>
+                <div class="svc-sub">Itens aguardando devolução</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="service-item" onclick="showToast('info','Declaração de nada consta — em construção.')">
+              <div class="svc-icon gray">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="svc-text">
+                <div class="svc-name">Declaração de nada consta</div>
+                <div class="svc-sub">Emitir comprovante</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div><!-- /screen-emprestimo -->
+
+      <!-- ═══ SCREEN C: RESERVAS ═══ -->
+      <div class="screen" id="screen-reservas">
+        <div class="header">
+          <div class="header-left">
+            <button class="hamburger" onclick="openDrawer()">
+              <span></span><span></span><span></span>
+            </button>
+            <span class="header-title">Reserva</span>
+          </div>
+          <div class="header-right">
+            <button class="notif-btn">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="notif-dot">0</span>
+            </button>
+            <button class="sair-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+        <div class="back-header">
+          <button class="back-btn-nav" onclick="goScreen('emprestimo')">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="breadcrumb">
+            <span>Empréstimo</span>
+            <span class="sep">›</span>
+            <span class="current">Reserva</span>
+          </div>
+        </div>
+        <div class="content" id="reservas-content">
+          <!-- renderizado por JS -->
+        </div>
+      </div><!-- /screen-reservas -->
+
+      <!-- ═══ SCREEN D: BUSCA DE LIVRO ═══ -->
+      <div class="screen" id="screen-reservar">
+        <div class="header">
+          <div class="header-left">
+            <button class="hamburger" onclick="openDrawer()"><span></span><span></span><span></span></button>
+            <span class="header-title">Nova reserva</span>
+          </div>
+          <div class="header-right">
+            <button class="notif-btn">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="notif-dot">0</span>
+            </button>
+            <button class="sair-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+        <div class="back-header">
+          <button class="back-btn-nav" onclick="goScreen('reservas')">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="breadcrumb">
+            <span>Empréstimo</span><span class="sep">›</span>
+            <span>Reserva</span><span class="sep">›</span>
+            <span class="current">Nova reserva</span>
+          </div>
+        </div>
+        <div class="content">
+
+          <!-- Seletor de biblioteca -->
+          <div class="form-group">
+            <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Biblioteca de retirada
+            </label>
+            <select class="form-select" id="biblioteca-select" onchange="onBibliotecaChange()">
+              <option value="">Selecione a biblioteca…</option>
+              <option value="bu">BU Central — Trindade</option>
+              <option value="bsa">BS Araranguá</option>
+              <option value="bsj">BS Joinville</option>
+            </select>
+          </div>
+
+          <!-- Barra de busca (bloqueada até escolher biblioteca) -->
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;position:relative;">
+              <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--text3);fill:none;stroke-width:2;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input id="search-input" class="form-input" style="padding-left:34px;background-image:none;" type="text" placeholder="Título, autor ou ISBN…" oninput="handleSearch(this.value)" disabled>
+            </div>
+            <button class="btn btn-primary" style="width:auto;padding:0 14px;" id="search-btn" onclick="handleSearch(document.getElementById('search-input').value)" disabled>
+              <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:white;fill:none;stroke-width:2;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+
+          <!-- Estado inicial -->
+          <div id="search-idle" style="display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:10px;text-align:center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <div style="font-size:0.875rem;font-weight:600;color:var(--text2);">Selecione a biblioteca</div>
+            <div style="font-size:0.78rem;color:var(--text3);max-width:210px;line-height:1.5;">Escolha onde quer retirar o livro para ver a disponibilidade correta.</div>
+          </div>
+
+          <!-- Resultados -->
+          <div id="search-results" style="display:none;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div><!-- /screen-reservar -->
+
+      <!-- ═══ SCREEN D2: FORMULÁRIO DE RESERVA ═══ -->
+      <div class="screen" id="screen-form-reservar">
+        <div class="header">
+          <div class="header-left">
+            <button class="hamburger" onclick="openDrawer()"><span></span><span></span><span></span></button>
+            <span class="header-title">Reservar livro</span>
+          </div>
+          <div class="header-right">
+            <button class="notif-btn">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="notif-dot">0</span>
+            </button>
+            <button class="sair-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+        <div class="back-header">
+          <button class="back-btn-nav" onclick="goScreen('reservar')">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="breadcrumb">
+            <span>Reserva</span><span class="sep">›</span>
+            <span class="current">Confirmar</span>
+          </div>
+        </div>
+        <div class="content" id="form-reservar-content"></div>
+      </div><!-- /screen-form-reservar -->
+
+      <!-- ═══ SCREEN E: CONFIRMADA ═══ -->
+      <div class="screen" id="screen-confirmada">
+        <div class="header">
+          <div class="header-left">
+            <button class="hamburger" onclick="openDrawer()">
+              <span></span><span></span><span></span>
+            </button>
+            <span class="header-title">Reserva confirmada</span>
+          </div>
+          <div class="header-right">
+            <button class="sair-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; gap:20px; text-align:center;">
+          <div style="width:72px;height:72px;background:var(--green-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #86CEAA;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A7A4A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:6px;">Reserva confirmada!</div>
+            <div style="font-size:0.85rem;color:var(--text2);line-height:1.6;">
+              <strong id="confirmed-title">Cálculo — Vol. 2</strong> está guardado para você<br>até <strong id="prazo-date"></strong> na <span id="confirmed-local">Biblioteca Setorial de Araranguá</span>.
+            </div>
+          </div>
+          <div class="banner success" style="text-align:left;width:100%;">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span class="banner-text">Retire o livro no balcão de atendimento com sua carteirinha UFSC.</span>
+          </div>
+          <button class="btn btn-primary" onclick="goScreen('reservas')" style="width:100%;max-width:280px;">
+            Ver minhas reservas
+          </button>
+          <button class="btn btn-ghost" onclick="goScreen('home')" style="width:100%;max-width:280px;">
+            Voltar ao início
+          </button>
+        </div>
+      </div><!-- /screen-confirmada -->
+
+    </div><!-- /phone-screen -->
+
+    <!-- DRAWER -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer(event)">
+      <div class="drawer">
+        <div class="drawer-header">
+          <div class="drawer-logo">Pergamum</div>
+          <div class="drawer-sub">Sistema de Bibliotecas — UFSC</div>
+        </div>
+        <div class="drawer-user">
+          <div class="drawer-avatar">AS</div>
+          <div>
+            <div class="drawer-username">Artur Silva</div>
+            <div class="drawer-role">Estudante de graduação</div>
+          </div>
+        </div>
+        <div class="drawer-nav">
+          <button class="drawer-item active" onclick="closeDrawer(); goScreen('home')">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="d-label">Início</span>
+          </button>
+          <button class="drawer-item" onclick="closeDrawer(); goScreen('emprestimo')">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span class="d-label">Empréstimo</span>
+            <svg class="d-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="drawer-item" onclick="closeDrawer(); showToast('info','Perfil de interesse — em construção.')">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <span class="d-label">Perfil de interesse</span>
+            <svg class="d-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="drawer-item" onclick="closeDrawer(); showToast('info','Aquisição — em construção.')">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="d-label">Aquisição</span>
+            <svg class="d-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="drawer-item" onclick="closeDrawer(); showToast('info','Dados pessoais — em construção.')">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="d-label">Dados pessoais</span>
+            <svg class="d-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <div class="drawer-footer">
+          <button class="drawer-sair">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sair da conta
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-wrap" id="toast-wrap"></div>
+
+  </div><!-- /phone-frame -->
+
+</div><!-- /phone-wrap -->
+
+<script>
+  // ─── STATE ───
+  let reservations = [
+    { title: 'Dom Casmurro', author: 'Machado de Assis', type: 'pickup', daysLeft: 1, totalDays: 2, local: 'BU Central' },
+    { title: 'Grande Sertão: Veredas', author: 'Guimarães Rosa', type: 'borrowed', daysLeft: 5, totalDays: 14, local: 'BS Araranguá' },
+  ];
+
+  // ─── NAVIGATION ───
+  function goScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    document.getElementById('phone-screen').scrollTop = 0;
+
+    // update legend
+    document.querySelectorAll('.legend-item').forEach(l => l.classList.remove('current'));
+    const legMap = { home:'leg-home', emprestimo:'leg-emprestimo', reservas:'leg-reservas', reservar:'leg-reservar', 'form-reservar':'leg-reservar', confirmada:'leg-confirmada' };
+    if (legMap[id]) document.getElementById(legMap[id])?.classList.add('current');
+
+    if (id === 'reservas') renderReservations();
+    if (id === 'confirmada') {
+      const d = new Date(); d.setDate(d.getDate() + 2);
+      document.getElementById('prazo-date').textContent = d.toLocaleDateString('pt-BR');
+    }
+  }
+
+  // ─── DRAWER ───
+  function openDrawer() {
+    document.getElementById('drawer-overlay').classList.add('open');
+  }
+  function closeDrawer(e) {
+    if (!e || e.target === document.getElementById('drawer-overlay')) {
+      document.getElementById('drawer-overlay').classList.remove('open');
+    }
+  }
+
+  // ─── RESERVATIONS RENDER ───
+  function renderReservations() {
+    const el = document.getElementById('reservas-content');
+    if (!reservations.length) {
+      el.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="empty-title">Sem reservas ativas</div>
+          <div class="empty-desc">Você não possui nenhuma reserva no momento. Busque um título no catálogo para reservar.</div>
+        </div>
+        <button class="btn btn-primary" onclick="goScreen('reservar')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova reserva
+        </button>
+        <button class="history-link">
+          <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Histórico de reservas
+        </button>`;
+      return;
+    }
+
+    el.innerHTML = `
+      <button class="btn btn-primary" onclick="goScreen('reservar')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova reserva
+      </button>`;
+
+    const listHtml = reservations.map((r, i) => {
+      const pct = Math.round((r.daysLeft / r.totalDays) * 100);
+      const fillCls = pct > 50 ? 'fill-green' : pct > 25 ? 'fill-amber' : 'fill-red';
+      const tagCls = r.type === 'pickup' ? 'tag-pickup' : 'tag-borrowed';
+      const tagLabel = r.type === 'pickup' ? '⏰ Aguardando retirada' : '📖 Emprestado';
+      const label = r.type === 'pickup'
+        ? `${r.daysLeft}d para retirar em ${r.local}`
+        : `${r.daysLeft}d para devolver`;
+      return `<div class="res-card">
+        <div class="res-card-header">
+          <div class="res-book-thumb">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="res-book-info">
+            <span class="res-status-tag ${tagCls}">${tagLabel}</span>
+            <div class="res-book-title">${r.title}</div>
+            <div class="res-book-author">${r.author}</div>
+          </div>
+        </div>
+        <div class="res-card-body">
+          <div class="progress-row">
+            <div class="progress-bg">
+              <div class="progress-fill ${fillCls}" style="width:${pct}%"></div>
+            </div>
+            <span class="progress-label">${label}</span>
+          </div>
+          <button class="cancel-res-btn" onclick="cancelarReserva(${i})">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Cancelar reserva
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+
+    el.innerHTML += `<div class="res-list">${listHtml}</div>
+      <button class="history-link">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+        Histórico de reservas
+      </button>`;
+  }
+
+  function cancelarReserva(i) {
+    const title = reservations[i].title;
+    reservations.splice(i, 1);
+    renderReservations();
+    showToast('warn', 'Reserva cancelada', `"${title}" foi removido das suas reservas.`);
+  }
+
+  // ─── CATALOG (fictício) ───
+  // stock: por biblioteca — true = tem exemplar lá, false = não tem
+  const catalog = [
+    {
+      id: 1,
+      title: 'Dom Casmurro',
+      author: 'Machado de Assis',
+      year: '1899',
+      isbn: '978-85-359-0277-6',
+      area: 'Literatura Brasileira',
+      stock: { bu: true, bsa: false, bsj: false },
+      copiesAt: { bu: 3, bsa: 0, bsj: 0 },
+      locationAt: { bu: 'BU Central — Prateleira L2-14', bsa: null, bsj: null },
+      queueAhead: 0,
+    },
+    {
+      id: 2,
+      title: 'Cálculo — Vol. 2',
+      author: 'James Stewart',
+      year: '2013',
+      isbn: '978-85-221-1707-0',
+      area: 'Matemática',
+      stock: { bu: false, bsa: false, bsj: false },
+      copiesAt: { bu: 0, bsa: 0, bsj: 0 },
+      locationAt: { bu: null, bsa: null, bsj: null },
+      queueAhead: 2,
+    },
+  ];
+
+  const libraryLabel = {
+    bu:  'BU Central — Trindade',
+    bsa: 'BS Araranguá',
+    bsj: 'BS Joinville',
+  };
+
+  let selectedBook = null;
+  let selectedLib  = '';
+
+  // ─── BIBLIOTECA CHANGE ───
+  function onBibliotecaChange() {
+    selectedLib = document.getElementById('biblioteca-select').value;
+    const searchInput = document.getElementById('search-input');
+    const searchBtn   = document.getElementById('search-btn');
+    const idle        = document.getElementById('search-idle');
+    const results     = document.getElementById('search-results');
+
+    if (selectedLib) {
+      searchInput.disabled = false;
+      searchBtn.disabled   = false;
+      searchInput.placeholder = 'Título, autor ou ISBN…';
+      // Atualiza idle para mostrar ícone de busca
+      idle.innerHTML = `
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div style="font-size:0.875rem;font-weight:600;color:var(--text2);">Busque um título</div>
+        <div style="font-size:0.78rem;color:var(--text3);max-width:210px;line-height:1.5;">A disponibilidade exibida é para <strong style="color:var(--text2);">${libraryLabel[selectedLib]}</strong>.</div>`;
+    } else {
+      searchInput.disabled = true;
+      searchBtn.disabled   = true;
+    }
+
+    // Limpa busca anterior
+    searchInput.value = '';
+    idle.style.display = 'flex';
+    results.style.display = 'none';
+    results.innerHTML = '';
+  }
+
+  // ─── SEARCH ───
+  function handleSearch(q) {
+    if (!selectedLib) return;
+    const idle = document.getElementById('search-idle');
+    const results = document.getElementById('search-results');
+    const term = q.trim().toLowerCase();
+
+    if (!term) {
+      idle.style.display = 'flex';
+      results.style.display = 'none';
+      results.innerHTML = '';
+      return;
+    }
+
+    const matches = catalog.filter(b =>
+      b.title.toLowerCase().includes(term) ||
+      b.author.toLowerCase().includes(term) ||
+      b.isbn.includes(term)
+    );
+
+    idle.style.display = 'none';
+    results.style.display = 'flex';
+
+    if (!matches.length) {
+      results.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:10px;text-align:center;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div style="font-size:0.875rem;font-weight:600;color:var(--text2);">Nenhum resultado</div>
+          <div style="font-size:0.78rem;color:var(--text3);max-width:210px;line-height:1.5;">Tente buscar por "Dom Casmurro" ou "Cálculo".</div>
+        </div>`;
+      return;
+    }
+
+    results.innerHTML = matches.map(b => {
+      const avail  = b.stock[selectedLib];
+      const copies = b.copiesAt[selectedLib];
+      const chipCls   = avail ? 'chip-available' : 'chip-unavailable';
+      const chipLabel = avail
+        ? `✓ ${copies} exemplar${copies !== 1 ? 'es' : ''} disponível`
+        : '✗ Sem exemplares aqui';
+      return `
+        <div class="book-search-card" onclick="selectBook(${b.id})">
+          <div class="bsc-thumb">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="bsc-info">
+            <div class="bsc-title">${b.title}</div>
+            <div class="bsc-author">${b.author} · ${b.year}</div>
+            <span class="book-chip ${chipCls}" style="margin-top:5px;display:inline-flex;">${chipLabel}</span>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" style="flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`;
+    }).join('');
+  }
+
+  function selectBook(id) {
+    selectedBook = catalog.find(b => b.id === id);
+    renderFormReservar(selectedBook);
+    goScreen('form-reservar');
+  }
+
+  function renderFormReservar(book) {
+    const el    = document.getElementById('form-reservar-content');
+    const avail  = book.stock[selectedLib];
+    const copies = book.copiesAt[selectedLib];
+    const loc    = book.locationAt[selectedLib];
+    const libName = libraryLabel[selectedLib];
+
+    const chipCls   = avail ? 'chip-available' : 'chip-queue';
+    const chipLabel = avail
+      ? `✓ ${copies} exemplar${copies !== 1 ? 'es' : ''} disponível`
+      : `⏱ ${book.queueAhead} pessoa${book.queueAhead !== 1 ? 's' : ''} na fila`;
+
+    let bodyHtml;
+
+    if (avail) {
+      bodyHtml = `
+        <div class="banner warn" style="margin-top:0;">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span class="banner-text"><strong>Reserva não necessária.</strong><br>Este título possui ${copies} exemplar${copies !== 1 ? 'es' : ''} disponível${copies !== 1 ? 'is' : ''} na ${libName}. Reservas só podem ser feitas quando não há exemplares no acervo.</span>
+        </div>
+        <div class="book-detail-card" style="margin-top:0;">
+          <div class="book-detail-body">
+            <div class="detail-row"><span class="dr-label">Localização</span><span class="dr-value">${loc}</span></div>
+            <div class="detail-row"><span class="dr-label">Biblioteca</span><span class="dr-value">${libName}</span></div>
+            <div class="detail-row"><span class="dr-label">Área</span><span class="dr-value">${book.area}</span></div>
+          </div>
+        </div>
+        <div class="banner success" style="margin-top:0;">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span class="banner-text">Dirija-se ao balcão de atendimento com sua carteirinha UFSC para retirar o exemplar.</span>
+        </div>
+        <button class="btn btn-ghost" onclick="goScreen('reservar')">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar à busca
+        </button>`;
+    } else {
+      bodyHtml = `
+        <div class="banner info" style="margin-top:0;">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="banner-text">Todos os exemplares estão emprestados na ${libName}. Você entrará na fila de reserva e será avisado quando um exemplar estiver disponível.</span>
+        </div>
+        <div class="form-section">
+          <div class="form-group">
+            <label class="form-label">Volume / Exemplar</label>
+            <select class="form-select" id="volume-select" onchange="checkForm()">
+              <option value="">Selecione o volume…</option>
+              <option value="v2">Vol. 2 — Ed. 7ª</option>
+            </select>
+            <span class="form-hint">Escolha o volume que deseja reservar.</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-primary" id="confirmar-btn" onclick="confirmarReserva()" disabled>
+            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            Confirmar reserva
+          </button>
+          <p class="btn-reason" id="btn-reason">Selecione o volume para continuar.</p>
+          <button class="btn btn-ghost" onclick="goScreen('reservar')">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Voltar à busca
+          </button>
+        </div>`;
+    }
+
+    el.innerHTML = `
+      <div class="book-detail-card">
+        <div class="book-detail-header">
+          <div class="book-thumb">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="book-meta">
+            <h2>${book.title}</h2>
+            <div class="bm-author">${book.author} · ${book.year}</div>
+            <span class="book-chip ${chipCls}">${chipLabel}</span>
+          </div>
+        </div>
+      </div>
+      ${bodyHtml}`;
+
+    if (!avail) checkForm();
+  }
+
+  // ─── FORM LOGIC ───
+  function checkVolume() {
+    const volSel = document.getElementById('volume-select');
+    if (volSel) { volSel.value = ''; }
+    checkForm();
+  }
+
+  function checkForm() {
+    const v      = document.getElementById('volume-select')?.value;
+    const btn    = document.getElementById('confirmar-btn');
+    const reason = document.getElementById('btn-reason');
+    if (!btn) return;
+    if (v) {
+      btn.disabled = false;
+      if (reason) reason.style.display = 'none';
+    } else {
+      btn.disabled = true;
+      if (reason) { reason.style.display = 'block'; reason.textContent = 'Selecione o volume para continuar.'; }
+    }
+  }
+
+  function confirmarReserva() {
+    const title  = selectedBook?.title || 'Cálculo — Vol. 2';
+    const author = selectedBook?.author || 'James Stewart';
+    const local  = libraryLabel[selectedLib] || 'BS Araranguá';
+    reservations.unshift({ title, author, type: 'pickup', daysLeft: 2, totalDays: 2, local });
+    const prazo = new Date(); prazo.setDate(prazo.getDate() + 2);
+    goScreen('confirmada');
+    document.getElementById('confirmed-title').textContent = title;
+    document.getElementById('confirmed-local').textContent = local;
+    document.getElementById('prazo-date').textContent = prazo.toLocaleDateString('pt-BR');
+  }
+
+  // ─── TOAST ───
+  let toastTimer = null;
+  function showToast(type, title, desc) {
+    const wrap = document.getElementById('toast-wrap');
+    const icons = {
+      success: '<polyline points="20 6 9 17 4 12"/>',
+      warn: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+      info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+      error: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+    };
+    wrap.innerHTML = `<div class="toast ${type}">
+      <svg viewBox="0 0 24 24">${icons[type] || icons.info}</svg>
+      <div class="toast-body"><strong>${title}</strong>${desc ? '<span>' + desc + '</span>' : ''}</div>
+    </div>`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { wrap.innerHTML = ''; }, 3500);
+  }
+
+  // ─── INIT ───
+  renderReservations();
+</script>
+</body>
+</html>
